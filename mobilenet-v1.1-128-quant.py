@@ -38,17 +38,18 @@ def classify_image(interpreter, image, top_k=1):
   """Returns a sorted array of classification results."""
   set_input_tensor(interpreter, image)
   interpreter.invoke()
-  #output_details = interpreter.get_output_details()[0]
-  #output = np.squeeze(interpreter.get_tensor(output_details['index']))
+  output_details = interpreter.get_output_details()[0]
+  output = np.squeeze(interpreter.get_tensor(output_details['index']))
 
   # If the model is quantized (uint8 data), then dequantize the results
-  #if output_details['dtype'] == np.uint8:
-  #  scale, zero_point = output_details['quantization']
-  #  output = scale * (output - zero_point)
+  if output_details['dtype'] == np.uint8:
+    scale, zero_point = output_details['quantization']
+    output = scale * (output - zero_point)
 
-  #ordered = np.argpartition(-output, top_k)
-  #return [(i, output[i]) for i in ordered[:top_k]]
+  ordered = np.argpartition(-output, top_k)
+  return [(i, output[i]) for i in ordered[:top_k]]
 
+repeat = 10
 model_dir = './mobilenet-v1.1.0-128quant/'
 model_name ='mobilenet_v1_1.0_128_quant.tflite'
 
@@ -58,19 +59,13 @@ interpreter.allocate_tensors()
 _, height, width, _ = interpreter.get_input_details()[0]['shape']
 image = load_test_image(height, width, 'uint8')
 
-start_time = time.time()
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-results = classify_image(interpreter, image)
-elapsed_ms = (time.time() - start_time) * 1000
-elapsed_ms = elapsed_ms / 10
+numpy_time = np.zeros(repeat)
 
-print("%-20s %-19s" % (model_name, "%.2f ms" % elapsed_ms ))
+for i in range(0,repeat):
+     start_time = time.time()
+     results = classify_image(interpreter, image)
+     
+     elapsed_ms = (time.time() - start_time) * 1000
+     numpy_time[i] = elapsed_ms 
 
+print("tflite %-20s %-19s (%s)" % (model_name, "%.2f ms" % np.mean(numpy_time), "%.2f ms" % np.std(numpy_time)))
