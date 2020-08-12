@@ -3,7 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-
 import argparse
 import io
 import time
@@ -13,8 +12,8 @@ from PIL import Image
 from tflite_runtime.interpreter import Interpreter
 from util import set_input_tensor, classify_image, load_test_image, download_model_zoo,parse_options, get_device_arch, get_device_attributes, get_device_type, parse_options
 
-model_dir = './inception_v1_224_quant/'
-model_name ='inception_v1_224_quant.tflite'
+model_dir = './squeezenet_2018_04_27/'
+model_name ='squeezenet.tflite'
 repeat = 10
 
 model_dir = download_model_zoo(model_dir, model_name)
@@ -26,12 +25,12 @@ try:
 except AttributeError:
     import tflite.Model
     tflite_model = tflite.Model.Model.GetRootAsModel(tflite_model_buf, 0)
-    
+
 interpreter = Interpreter(tflite_model_file)
 interpreter.allocate_tensors()
 
 _, height, width, _ = interpreter.get_input_details()[0]['shape']
-image = load_test_image('uint8', height, width)
+image = load_test_image('float32', height, width)
 
 numpy_time = np.zeros(repeat)
 
