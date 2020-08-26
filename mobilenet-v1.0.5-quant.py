@@ -12,7 +12,7 @@ import numpy as np
 
 from PIL import Image
 from tflite_runtime.interpreter import Interpreter
-from tvm.contrib.download import download_testdata
+from download import download_testdata
 
 
 def load_test_image(height, width, dtype='float32'):
