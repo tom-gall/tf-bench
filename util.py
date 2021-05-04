@@ -20,7 +20,8 @@ import os
 import numpy as np
 import sys, getopt
 import tvm
-from tvm.contrib.download import download_testdata
+#from tvm.contrib.download import download_testdata
+from download import download_testdata
 from PIL import Image
 import cpuinfo
 import multiprocessing
