@@ -42,4 +42,3 @@ for i in range(0,repeat):
      numpy_time[i] = elapsed_ms
 
 print("tflite %-20s %-19s (%s)" % (model_name, "%.2f ms" % np.mean(numpy_time), "%.2f ms" % np.std(numpy_time)))
-
