@@ -11,7 +11,7 @@ import numpy as np
 
 from PIL import Image
 from tflite_runtime.interpreter import Interpreter
-from util import set_input_tensor, classify_image, load_test_image, download_model_zoo,parse_options, get_device_arch, get_device_attributes, get_device_type, parse_options
+from util import set_input_tensor, classify_image, load_test_image, download_model_zoo,parse_options, get_device_arch, get_device_attributes, get_device_type, parse_options, get_cpu_count
 
 repeat = 10
 model_dir = './mobilenet-v1.1.0-128quant/'
@@ -27,7 +27,7 @@ except AttributeError:
     import tflite.Model
     tflite_model = tflite.Model.Model.GetRootAsModel(tflite_model_buf, 0)
 
-interpreter = Interpreter(tflite_model_file)
+interpreter = Interpreter(tflite_model_file, num_threads=get_cpu_count())
 interpreter.allocate_tensors()
 
 _, height, width, _ = interpreter.get_input_details()[0]['shape']
